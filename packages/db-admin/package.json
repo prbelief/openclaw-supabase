@@ -27,7 +27,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/openclaw-supabase.git",
+    "url": "https://github.com/prbelief/openclaw-supabase.git",
     "directory": "packages/db-admin"
   },
   "devDependencies": {

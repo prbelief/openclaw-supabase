@@ -176,7 +176,7 @@ ollama pull nomic-embed-text
 ## Development
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/openclaw-supabase.git
+git clone https://github.com/prbelief/openclaw-supabase.git
 cd openclaw-supabase
 
 # Build ทั้ง 2 plugin
