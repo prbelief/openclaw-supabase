@@ -1,5 +1,5 @@
 {
-  "name": "@openclaw-supabase/db-admin",
+  "name": "@prbelief/db-admin",
   "version": "1.0.0",
   "description": "OpenClaw Plugin — Supabase database admin (CRUD + DDL + Raw SQL) with protectedTables guard",
   "main": "dist/index.js",

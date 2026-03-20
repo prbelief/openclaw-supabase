@@ -1,4 +1,4 @@
-# @openclaw-supabase/db-admin
+# @prbelief/db-admin
 
 > 🦞 OpenClaw Plugin — จัดการ Supabase database (CRUD + DDL + Raw SQL)
 
@@ -18,7 +18,7 @@
 openclaw plugins install ./packages/db-admin
 
 # จาก npm (หลัง publish)
-openclaw plugins install @openclaw-supabase/db-admin
+openclaw plugins install @prbelief/db-admin
 ```
 
 ## Setup
