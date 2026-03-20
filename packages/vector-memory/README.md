@@ -1,4 +1,4 @@
-# @prbelief/vector-memory
+# @prbelief/supabase-vector-memory
 
 > 🦞 OpenClaw Plugin — Long-term memory + Knowledge base ด้วย Supabase pgvector
 
@@ -20,7 +20,7 @@
 openclaw plugins install ./packages/vector-memory
 
 # จาก npm (หลัง publish)
-openclaw plugins install @prbelief/vector-memory
+openclaw plugins install @prbelief/supabase-vector-memory
 ```
 
 ## Setup

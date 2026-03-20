@@ -47,8 +47,8 @@ openclaw plugins install ./packages/db-admin
 ### จาก npm (หลัง publish)
 
 ```bash
-openclaw plugins install @prbelief/vector-memory
-openclaw plugins install @prbelief/db-admin
+openclaw plugins install @prbelief/supabase-vector-memory
+openclaw plugins install @prbelief/supabase-db-admin
 ```
 
 ## Supabase Setup

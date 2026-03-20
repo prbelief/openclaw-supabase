@@ -1,6 +1,6 @@
 {
-  "name": "@prbelief/vector-memory",
-  "version": "1.0.3",
+  "name": "@prbelief/supabase-vector-memory",
+  "version": "1.0.5",
   "description": "OpenClaw Plugin — Supabase pgvector long-term memory + knowledge base with auto-recall",
   "openclaw": {
     "id": "supabase-vector-memory",

@@ -1,6 +1,6 @@
 {
-  "name": "@prbelief/db-admin",
-  "version": "1.0.3",
+  "name": "@prbelief/supabase-db-admin",
+  "version": "1.0.5",
   "description": "OpenClaw Plugin — Supabase database admin (CRUD + DDL + Raw SQL) with protectedTables guard",
   "openclaw": {
     "id": "supabase-db-admin",
