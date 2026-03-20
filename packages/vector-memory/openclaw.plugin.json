@@ -1,0 +1,65 @@
+{
+  "id": "supabase-vector-memory",
+  "name": "supabase-vector-memory",
+  "version": "2.0.0",
+  "description": "2-Table Supabase pgvector memory (longterm_memory + knowledge_base) via REST API direct. Auto-recall ค้นทั้ง 2 table ก่อน agent ตอบ.",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "supabaseUrl": {
+        "type": "string",
+        "label": "Supabase Project URL (e.g. https://xxx.supabase.co)",
+        "description": "หาได้จาก Supabase Dashboard → Settings → API"
+      },
+      "supabaseServiceKey": {
+        "type": "string",
+        "label": "Supabase Service Role Key",
+        "description": "หาได้จาก Supabase Dashboard → Settings → API → service_role key"
+      },
+      "ollamaUrl": {
+        "type": "string",
+        "default": "http://localhost:11434",
+        "label": "Ollama server URL"
+      },
+      "embeddingModel": {
+        "type": "string",
+        "default": "nomic-embed-text",
+        "label": "Ollama embedding model"
+      },
+      "tables": {
+        "type": "object",
+        "label": "Table names ใน Supabase",
+        "default": {
+          "longterm": "longterm_memory",
+          "knowledge": "knowledge_base"
+        }
+      },
+      "autoRecall": {
+        "type": "boolean",
+        "default": true,
+        "label": "Auto-recall ค้นทั้ง 2 table ก่อน agent ตอบ"
+      },
+      "autoRecallResults": {
+        "type": "number",
+        "default": 3,
+        "label": "จำนวนผลลัพธ์ต่อ table สำหรับ auto-recall"
+      },
+      "minSimilarity": {
+        "type": "number",
+        "default": 0.5,
+        "label": "Similarity threshold (0-1, ยิ่งสูงยิ่งตรง)"
+      },
+      "saveConversations": {
+        "type": "boolean",
+        "default": true,
+        "label": "บันทึกบทสนทนาลง longterm_memory"
+      },
+      "userId": {
+        "type": "string",
+        "default": "default",
+        "label": "User ID"
+      }
+    },
+    "required": ["supabaseUrl", "supabaseServiceKey"]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "supabase-db-admin",
+  "name": "supabase-db-admin",
+  "version": "1.0.0",
+  "description": "จัดการ Supabase database — CRUD + CREATE/DROP/ALTER table + Raw SQL. มี protectedTables config ป้องกัน table สำคัญ.",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "supabaseUrl": {
+        "type": "string",
+        "label": "Supabase Project URL"
+      },
+      "supabaseServiceKey": {
+        "type": "string",
+        "label": "Supabase Service Role Key"
+      },
+      "protectedTables": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": [],
+        "label": "Table ที่ห้าม write/drop/alter (read ยังได้)",
+        "description": "เช่น ['auth.users', 'longterm_memory', 'knowledge_base']"
+      }
+    },
+    "required": ["supabaseUrl", "supabaseServiceKey"]
+  }
+}

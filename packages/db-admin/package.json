@@ -1,0 +1,39 @@
+{
+  "name": "@openclaw-supabase/db-admin",
+  "version": "1.0.0",
+  "description": "OpenClaw Plugin — Supabase database admin (CRUD + DDL + Raw SQL) with protectedTables guard",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "migration.sql",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "supabase",
+    "database-admin",
+    "crud",
+    "raw-sql"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/openclaw-supabase.git",
+    "directory": "packages/db-admin"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

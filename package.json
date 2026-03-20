@@ -1,0 +1,30 @@
+{
+  "name": "openclaw-supabase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenClaw Plugins for Supabase — Vector Memory + Database Admin",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build:vector-memory && npm run build:db-admin",
+    "build:vector-memory": "cd packages/vector-memory && npm run build",
+    "build:db-admin": "cd packages/db-admin && npm run build",
+    "dev:vector-memory": "cd packages/vector-memory && npm run dev",
+    "dev:db-admin": "cd packages/db-admin && npm run dev",
+    "clean": "cd packages/vector-memory && npm run clean && cd ../../packages/db-admin && npm run clean"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/openclaw-supabase.git"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "supabase",
+    "pgvector",
+    "vector-memory",
+    "database-admin"
+  ]
+}

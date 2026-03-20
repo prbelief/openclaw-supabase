@@ -1,0 +1,41 @@
+{
+  "name": "@openclaw-supabase/vector-memory",
+  "version": "1.0.0",
+  "description": "OpenClaw Plugin — Supabase pgvector long-term memory + knowledge base with auto-recall",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "migration.sql",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "supabase",
+    "pgvector",
+    "vector-memory",
+    "auto-recall",
+    "long-term-memory",
+    "knowledge-base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/openclaw-supabase.git",
+    "directory": "packages/vector-memory"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
