@@ -82,7 +82,10 @@ function createSupabaseClient(cfg: PluginConfig) {
     Prefer: "return=representation",
   };
 
-  const baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+  let baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+  if (!baseUrl.endsWith("/rest/v1")) {
+    baseUrl += "/rest/v1";
+  }
 
   return {
     /**
@@ -90,7 +93,7 @@ function createSupabaseClient(cfg: PluginConfig) {
      * ไม่มีปัญหา query size limit เพราะส่งเป็น JSON body
      */
     async insert(table: string, data: Record<string, any>): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}`, {
+      const resp = await fetch(`${baseUrl}/${table}`, {
         method: "POST",
         headers: { ...headers, Prefer: "return=representation,resolution=merge-duplicates" },
         body: JSON.stringify(data),
@@ -110,8 +113,8 @@ function createSupabaseClient(cfg: PluginConfig) {
         ? `return=representation,resolution=merge-duplicates`
         : `return=representation`;
       const url = onConflict
-        ? `${baseUrl}/rest/v1/${table}?on_conflict=${onConflict}`
-        : `${baseUrl}/rest/v1/${table}`;
+        ? `${baseUrl}/${table}?on_conflict=${onConflict}`
+        : `${baseUrl}/${table}`;
       const resp = await fetch(url, {
         method: "POST",
         headers: { ...headers, Prefer: prefer },
@@ -128,7 +131,7 @@ function createSupabaseClient(cfg: PluginConfig) {
      * UPDATE row by id
      */
     async update(table: string, id: number, data: Record<string, any>): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}?id=eq.${id}`, {
+      const resp = await fetch(`${baseUrl}/${table}?id=eq.${id}`, {
         method: "PATCH",
         headers,
         body: JSON.stringify(data),
@@ -145,7 +148,7 @@ function createSupabaseClient(cfg: PluginConfig) {
      */
     async delete(table: string, id: number, userId: string): Promise<any> {
       const resp = await fetch(
-        `${baseUrl}/rest/v1/${table}?id=eq.${id}&user_id=eq.${encodeURIComponent(userId)}`,
+        `${baseUrl}/${table}?id=eq.${id}&user_id=eq.${encodeURIComponent(userId)}`,
         { method: "DELETE", headers },
       );
       if (!resp.ok) {
@@ -159,7 +162,7 @@ function createSupabaseClient(cfg: PluginConfig) {
      * SELECT with filters
      */
     async select(table: string, query: string = ""): Promise<any[]> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}?${query}`, {
+      const resp = await fetch(`${baseUrl}/${table}?${query}`, {
         method: "GET",
         headers: { ...headers, Prefer: "" },
       });
@@ -175,7 +178,7 @@ function createSupabaseClient(cfg: PluginConfig) {
      * embedding ส่งเป็น JSON body → ไม่มี query size limit
      */
     async rpc(fnName: string, params: Record<string, any>): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/rpc/${fnName}`, {
+      const resp = await fetch(`${baseUrl}/rpc/${fnName}`, {
         method: "POST",
         headers: { ...headers, Prefer: "" },
         body: JSON.stringify(params),
@@ -663,9 +666,12 @@ export default function register(api: any) {
       try {
         // PostgREST ใช้ HEAD request + Prefer: count=exact
         const countTable = async (table: string) => {
-          const baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+          let baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+          if (!baseUrl.endsWith("/rest/v1")) {
+            baseUrl += "/rest/v1";
+          }
           const resp = await fetch(
-            `${baseUrl}/rest/v1/${table}?user_id=eq.${encodeURIComponent(cfg.userId)}&select=collection`,
+            `${baseUrl}/${table}?user_id=eq.${encodeURIComponent(cfg.userId)}&select=collection`,
             {
               method: "GET",
               headers: {

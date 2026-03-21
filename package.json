@@ -1,6 +1,6 @@
 {
   "name": "openclaw-supabase",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "description": "OpenClaw Plugins for Supabase — Vector Memory + Database Admin",
   "workspaces": [

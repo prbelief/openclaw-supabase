@@ -43,7 +43,10 @@ interface PluginConfig {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function createClient(cfg: PluginConfig) {
-  const baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+  let baseUrl = cfg.supabaseUrl.replace(/\/$/, "");
+  if (!baseUrl.endsWith("/rest/v1")) {
+    baseUrl += "/rest/v1";
+  }
   const headers: Record<string, string> = {
     apikey: cfg.supabaseServiceKey,
     Authorization: `Bearer ${cfg.supabaseServiceKey}`,
@@ -52,50 +55,59 @@ function createClient(cfg: PluginConfig) {
 
   return {
     async restGet(table: string, query: string = ""): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}?${query}`, {
+      const resp = await fetch(`${baseUrl}/${table}?${query}`, {
         method: "GET",
         headers: { ...headers, Prefer: "" },
       });
-      if (!resp.ok) throw new Error(`GET ${table}: ${resp.status} — ${await resp.text()}`);
+      if (!resp.ok)
+        throw new Error(`GET ${table}: ${resp.status} — ${await resp.text()}`);
       return resp.json();
     },
 
     async restPost(table: string, data: any): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}`, {
+      const resp = await fetch(`${baseUrl}/${table}`, {
         method: "POST",
         headers: { ...headers, Prefer: "return=representation" },
         body: JSON.stringify(data),
       });
-      if (!resp.ok) throw new Error(`POST ${table}: ${resp.status} — ${await resp.text()}`);
+      if (!resp.ok)
+        throw new Error(`POST ${table}: ${resp.status} — ${await resp.text()}`);
       return resp.json();
     },
 
     async restPatch(table: string, filter: string, data: any): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}?${filter}`, {
+      const resp = await fetch(`${baseUrl}/${table}?${filter}`, {
         method: "PATCH",
         headers: { ...headers, Prefer: "return=representation" },
         body: JSON.stringify(data),
       });
-      if (!resp.ok) throw new Error(`PATCH ${table}: ${resp.status} — ${await resp.text()}`);
+      if (!resp.ok)
+        throw new Error(
+          `PATCH ${table}: ${resp.status} — ${await resp.text()}`,
+        );
       return resp.json();
     },
 
     async restDelete(table: string, filter: string): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/${table}?${filter}`, {
+      const resp = await fetch(`${baseUrl}/${table}?${filter}`, {
         method: "DELETE",
         headers: { ...headers, Prefer: "return=representation" },
       });
-      if (!resp.ok) throw new Error(`DELETE ${table}: ${resp.status} — ${await resp.text()}`);
+      if (!resp.ok)
+        throw new Error(
+          `DELETE ${table}: ${resp.status} — ${await resp.text()}`,
+        );
       return resp.json();
     },
 
     async rpc(fnName: string, params: Record<string, any> = {}): Promise<any> {
-      const resp = await fetch(`${baseUrl}/rest/v1/rpc/${fnName}`, {
+      const resp = await fetch(`${baseUrl}/rpc/${fnName}`, {
         method: "POST",
         headers: { ...headers, Prefer: "" },
         body: JSON.stringify(params),
       });
-      if (!resp.ok) throw new Error(`RPC ${fnName}: ${resp.status} — ${await resp.text()}`);
+      if (!resp.ok)
+        throw new Error(`RPC ${fnName}: ${resp.status} — ${await resp.text()}`);
       return resp.json();
     },
   };
@@ -124,7 +136,9 @@ function isProtected(table: string, protectedTables: string[]): boolean {
 
 function guardWrite(table: string, cfg: PluginConfig): void {
   if (isProtected(table, cfg.protectedTables)) {
-    throw new Error(`❌ Table "${table}" อยู่ใน protectedTables — ห้าม write/drop/alter`);
+    throw new Error(
+      `❌ Table "${table}" อยู่ใน protectedTables — ห้าม write/drop/alter`,
+    );
   }
 }
 
@@ -136,10 +150,10 @@ function guardRawSQL(sql: string, cfg: PluginConfig): void {
     // เช็คว่า SQL มีชื่อ table อยู่ + เป็น write operation
     if (
       sqlLower.includes(tLower) &&
-      (sqlLower.match(/^\s*(insert|update|delete|drop|alter|truncate)/i))
+      sqlLower.match(/^\s*(insert|update|delete|drop|alter|truncate)/i)
     ) {
       throw new Error(
-        `❌ SQL มี write operation ที่แตะ protected table "${table}" — ยกเลิก`
+        `❌ SQL มี write operation ที่แตะ protected table "${table}" — ยกเลิก`,
       );
     }
   }
@@ -162,7 +176,9 @@ export default function register(api: any) {
   };
 
   if (!cfg.supabaseUrl || !cfg.supabaseServiceKey) {
-    api.logger?.error?.("supabase-db-admin: ต้องตั้ง supabaseUrl + supabaseServiceKey!");
+    api.logger?.error?.(
+      "supabase-db-admin: ต้องตั้ง supabaseUrl + supabaseServiceKey!",
+    );
     return;
   }
 
@@ -237,7 +253,9 @@ export default function register(api: any) {
       try {
         const countResult = await execSQL(db, countSql);
         rowCount = Array.isArray(countResult) ? countResult[0]?.total : 0;
-      } catch { /* table อาจว่าง */ }
+      } catch {
+        /* table อาจว่าง */
+      }
 
       return {
         text: JSON.stringify({
@@ -262,8 +280,15 @@ export default function register(api: any) {
         required: ["table"],
         properties: {
           table: { type: "string" },
-          select: { type: "string", default: "*", description: "columns เช่น 'id,name,email'" },
-          filter: { type: "string", description: "PostgREST filter เช่น 'status=eq.active&age=gt.18'" },
+          select: {
+            type: "string",
+            default: "*",
+            description: "columns เช่น 'id,name,email'",
+          },
+          filter: {
+            type: "string",
+            description: "PostgREST filter เช่น 'status=eq.active&age=gt.18'",
+          },
           order: { type: "string", description: "เช่น 'created_at.desc'" },
           limit: { type: "number", default: 50 },
         },
@@ -275,7 +300,9 @@ export default function register(api: any) {
       if (input.order) query += `&order=${encodeURIComponent(input.order)}`;
       query += `&limit=${input.limit ?? 50}`;
       const rows = await db.restGet(input.table, query);
-      return { text: JSON.stringify({ table: input.table, count: rows.length, rows }) };
+      return {
+        text: JSON.stringify({ table: input.table, count: rows.length, rows }),
+      };
     },
   );
 
@@ -285,7 +312,8 @@ export default function register(api: any) {
     {
       name: "db_insert",
       label: "INSERT",
-      description: "เพิ่ม row(s) ลง table — ส่งเป็น object หรือ array of objects",
+      description:
+        "เพิ่ม row(s) ลง table — ส่งเป็น object หรือ array of objects",
       parameters: {
         type: "object",
         required: ["table", "data"],
@@ -299,7 +327,13 @@ export default function register(api: any) {
       guardWrite(input.table, cfg);
       const result = await db.restPost(input.table, input.data);
       const count = Array.isArray(result) ? result.length : 1;
-      return { text: JSON.stringify({ status: "ok", table: input.table, inserted: count }) };
+      return {
+        text: JSON.stringify({
+          status: "ok",
+          table: input.table,
+          inserted: count,
+        }),
+      };
     },
   );
 
@@ -315,7 +349,10 @@ export default function register(api: any) {
         required: ["table", "filter", "data"],
         properties: {
           table: { type: "string" },
-          filter: { type: "string", description: "PostgREST filter เช่น 'id=eq.5'" },
+          filter: {
+            type: "string",
+            description: "PostgREST filter เช่น 'id=eq.5'",
+          },
           data: { type: "object", description: "fields ที่จะ update" },
         },
       },
@@ -327,7 +364,13 @@ export default function register(api: any) {
       }
       const result = await db.restPatch(input.table, input.filter, input.data);
       const count = Array.isArray(result) ? result.length : 0;
-      return { text: JSON.stringify({ status: "ok", table: input.table, updated: count }) };
+      return {
+        text: JSON.stringify({
+          status: "ok",
+          table: input.table,
+          updated: count,
+        }),
+      };
     },
   );
 
@@ -343,7 +386,11 @@ export default function register(api: any) {
         required: ["table", "filter"],
         properties: {
           table: { type: "string" },
-          filter: { type: "string", description: "PostgREST filter เช่น 'id=eq.5' หรือ 'status=eq.archived'" },
+          filter: {
+            type: "string",
+            description:
+              "PostgREST filter เช่น 'id=eq.5' หรือ 'status=eq.archived'",
+          },
         },
       },
     },
@@ -354,7 +401,13 @@ export default function register(api: any) {
       }
       const result = await db.restDelete(input.table, input.filter);
       const count = Array.isArray(result) ? result.length : 0;
-      return { text: JSON.stringify({ status: "ok", table: input.table, deleted: count }) };
+      return {
+        text: JSON.stringify({
+          status: "ok",
+          table: input.table,
+          deleted: count,
+        }),
+      };
     },
   );
 
@@ -377,9 +430,16 @@ export default function register(api: any) {
               type: "object",
               properties: {
                 name: { type: "string" },
-                type: { type: "string", description: "เช่น TEXT, INT, SERIAL, JSONB, TIMESTAMPTZ, vector(768)" },
+                type: {
+                  type: "string",
+                  description:
+                    "เช่น TEXT, INT, SERIAL, JSONB, TIMESTAMPTZ, vector(768)",
+                },
                 nullable: { type: "boolean", default: true },
-                default: { type: "string", description: "default value เช่น 'now()'" },
+                default: {
+                  type: "string",
+                  description: "default value เช่น 'now()'",
+                },
                 primary_key: { type: "boolean", default: false },
               },
             },
@@ -397,7 +457,9 @@ export default function register(api: any) {
       });
       const sql = `CREATE TABLE IF NOT EXISTS "${esc(input.table)}" (\n  ${colDefs.join(",\n  ")}\n)`;
       await execSQL(db, sql);
-      return { text: JSON.stringify({ status: "ok", created: input.table, sql }) };
+      return {
+        text: JSON.stringify({ status: "ok", created: input.table, sql }),
+      };
     },
   );
 
@@ -420,7 +482,12 @@ export default function register(api: any) {
     async ({ input }: any) => {
       guardWrite(input.table, cfg);
       if (input.confirm !== true) {
-        return { text: JSON.stringify({ status: "cancelled", message: "ต้องส่ง confirm: true เพื่อยืนยัน DROP" }) };
+        return {
+          text: JSON.stringify({
+            status: "cancelled",
+            message: "ต้องส่ง confirm: true เพื่อยืนยัน DROP",
+          }),
+        };
       }
       const sql = `DROP TABLE IF EXISTS "${esc(input.table)}" CASCADE`;
       await execSQL(db, sql);
@@ -442,12 +509,27 @@ export default function register(api: any) {
           table: { type: "string" },
           action: {
             type: "string",
-            enum: ["add_column", "drop_column", "rename_column", "rename_table", "change_type"],
+            enum: [
+              "add_column",
+              "drop_column",
+              "rename_column",
+              "rename_table",
+              "change_type",
+            ],
             description: "ประเภทการแก้ไข",
           },
-          column: { type: "string", description: "ชื่อ column (สำหรับ add/drop/rename/change)" },
-          column_type: { type: "string", description: "type ใหม่ (สำหรับ add_column / change_type)" },
-          new_name: { type: "string", description: "ชื่อใหม่ (สำหรับ rename_column / rename_table)" },
+          column: {
+            type: "string",
+            description: "ชื่อ column (สำหรับ add/drop/rename/change)",
+          },
+          column_type: {
+            type: "string",
+            description: "type ใหม่ (สำหรับ add_column / change_type)",
+          },
+          new_name: {
+            type: "string",
+            description: "ชื่อใหม่ (สำหรับ rename_column / rename_table)",
+          },
           nullable: { type: "boolean", default: true },
           default_value: { type: "string" },
         },
@@ -482,7 +564,14 @@ export default function register(api: any) {
       }
 
       await execSQL(db, sql);
-      return { text: JSON.stringify({ status: "ok", table: input.table, action: input.action, sql }) };
+      return {
+        text: JSON.stringify({
+          status: "ok",
+          table: input.table,
+          action: input.action,
+          sql,
+        }),
+      };
     },
   );
 
@@ -501,15 +590,24 @@ export default function register(api: any) {
         type: "object",
         required: ["sql"],
         properties: {
-          sql: { type: "string", description: "SQL query (SELECT, SHOW, EXPLAIN เท่านั้น)" },
+          sql: {
+            type: "string",
+            description: "SQL query (SELECT, SHOW, EXPLAIN เท่านั้น)",
+          },
         },
       },
     },
     async ({ input }: any) => {
       const sqlTrimmed = input.sql.trim().toLowerCase();
-      if (!sqlTrimmed.startsWith("select") && !sqlTrimmed.startsWith("show") &&
-          !sqlTrimmed.startsWith("explain") && !sqlTrimmed.startsWith("with")) {
-        throw new Error("❌ db_raw_read รองรับแค่ SELECT / SHOW / EXPLAIN / WITH — ใช้ db_raw_write สำหรับอื่นๆ");
+      if (
+        !sqlTrimmed.startsWith("select") &&
+        !sqlTrimmed.startsWith("show") &&
+        !sqlTrimmed.startsWith("explain") &&
+        !sqlTrimmed.startsWith("with")
+      ) {
+        throw new Error(
+          "❌ db_raw_read รองรับแค่ SELECT / SHOW / EXPLAIN / WITH — ใช้ db_raw_write สำหรับอื่นๆ",
+        );
       }
       const result = await execSQL(db, input.sql);
       return { text: JSON.stringify(result) };
@@ -522,13 +620,17 @@ export default function register(api: any) {
     {
       name: "db_raw_write",
       label: "Raw SQL (Write)",
-      description: "⚠️ รัน SQL อะไรก็ได้ (INSERT/UPDATE/DELETE/CREATE/ALTER/DROP) — เช็ค protectedTables",
+      description:
+        "⚠️ รัน SQL อะไรก็ได้ (INSERT/UPDATE/DELETE/CREATE/ALTER/DROP) — เช็ค protectedTables",
       parameters: {
         type: "object",
         required: ["sql"],
         properties: {
           sql: { type: "string", description: "SQL query" },
-          confirm: { type: "boolean", description: "ต้องเป็น true สำหรับ DROP/TRUNCATE" },
+          confirm: {
+            type: "boolean",
+            description: "ต้องเป็น true สำหรับ DROP/TRUNCATE",
+          },
         },
       },
     },
@@ -539,7 +641,10 @@ export default function register(api: any) {
       guardRawSQL(input.sql, cfg);
 
       // DROP/TRUNCATE ต้อง confirm
-      if ((sqlLower.startsWith("drop") || sqlLower.startsWith("truncate")) && input.confirm !== true) {
+      if (
+        (sqlLower.startsWith("drop") || sqlLower.startsWith("truncate")) &&
+        input.confirm !== true
+      ) {
         return {
           text: JSON.stringify({
             status: "cancelled",
